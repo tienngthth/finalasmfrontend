@@ -1,11 +1,11 @@
 import './App.css';
 import React from "react";
-import StudentComp from "./StudentComp";
+import AccountComp from "./AccountComp";
 function App() {
   return (
     <div className="App">
       <header className="App-header">
-        <StudentComp/>
+        <AccountComp/>
       </header>
     </div>
   );
