@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-export default function Login() {
+export default function LoginPanel() {
     const [username, setUsername] = useState("")
     const [password, setPassword] = useState("")
     const validateCredentialEndpoint = 'http://localhost:8989/login/password'

@@ -1,11 +1,12 @@
-import React, {useEffect, useState} from "react";
+import React, { useEffect, useState } from "react";
+import { errorLog } from "../styles/styles";
 
-const accountEndPoint = 'http://localhost:8989/accounts'
-const searchEndPoint = 'http://localhost:8989/accounts/attributes'
+const accountEndpoint = 'http://localhost:8989/accounts'
+const searchAccountEndpoint = `${accountEndpoint}/attributes`
 
-export default function AccountComp() {
+export default function AccountCRUD() {
     const [account, setAccount] = useState(
-        {id: "", fullName: "", username: "", password: "", phone: "", email: "", address: ""}
+        { id: "", fullName: "", username: "", password: "", phone: "", email: "", address: "" }
     )
     const [accounts, setAccounts] = useState([])
     const [fullNameError, setFullNameError] = useState("")
@@ -18,33 +19,31 @@ export default function AccountComp() {
     const [state, setState] = useState("Create")
     const [next, setNextPage] = useState("")
     const [page, setPage] = useState(0)
-    const elementsPerPage = 1
+    const elementsPerPage = 15
 
     useEffect(() => {
        load()
     }, []);
 
     const load = (startPage = page) => {
-        fetch(`${accountEndPoint}?startAt=${startPage * elementsPerPage}&maxResults=${elementsPerPage}`, {
-            method: 'GET',
-            headers: {
-                'Access-Control-Request-Method': 'GET'
-            }
-        })
+        fetch(`${accountEndpoint}?startAt=${startPage * elementsPerPage}&maxResults=${elementsPerPage}`)
         .then(response => response.json())
         .then(data => {
-            if (data.length === 0) {
-                setAccounts(accounts)
-                setPage(page)
-                setNextPage("")
-            } else {
-                setAccounts(data)
-                setNextPage("+")
+            if (!data.error) {
+                if (data.length === 0) {
+                    setAccounts(accounts)
+                    setPage(page)
+                    setNextPage("")
+                } else {
+                    setAccounts(data)
+                    setNextPage("+")
+                }
             }
         });
     }
 
     const prevPage = () => {
+        reset()
         if (page > 0) {
             setPage(page - 1)
             load(page - 1)
@@ -54,12 +53,13 @@ export default function AccountComp() {
     }
 
     const nextPage = () => {
+        reset()
         setPage(page + 1)
         load(page + 1)
     }
 
     const inputAccount = (newAccount) => {
-        setAccount({...account, [newAccount.action]: newAccount.value})
+        setAccount({...account, [newAccount.attribute]: newAccount.value})
     }
 
     const save = () => {
@@ -74,7 +74,6 @@ export default function AccountComp() {
                 default:
                     break
             }
-            reset()
         }
     }
 
@@ -98,7 +97,7 @@ export default function AccountComp() {
             setUsernameError("Username must have more 5 characters and be unique.")
             valid = 0
         }
-        if (!account.password.match(credential)){
+        if (state === "Create" && !account.password.match(credential)){
             setPasswordError("Password must have more 5 characters and be unique.")
             valid = 0
         }
@@ -114,7 +113,7 @@ export default function AccountComp() {
     }
 
     const create = () => {
-        fetch(accountEndPoint, {
+        fetch(accountEndpoint, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -124,68 +123,64 @@ export default function AccountComp() {
         })
         .then(res => res.json())
         .then(() => load())
-        .catch(() => {setActionError("Failed to create new account")})
+        .catch(() => { setActionError("Failed to create new account") })
     }
 
     const prepareUpdate = (account) => {
-        account.password = ""
-        setAccount(account)
+        reset()
+        setAccount({...account, ["password"]: ""})
         setState("Update")
     }
 
     const update = () => {
-        fetch(accountEndPoint, {
+        fetch(accountEndpoint, {
             method: 'PUT',
-            headers: {
-                'Access-Control-Request-Method': 'PUT',
-                'Content-Type': 'application/json'
-            },
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({...account})
         })
         .then(res =>  res.json())
         .then(() => load())
+        .catch(() => { setActionError("Failed to update account") })
     }
-    
 
     const deleteAccount = (id) => {
-        fetch(`${accountEndPoint}/${id}`, {
-            method: 'DELETE',
-            headers: {
-                'Access-Control-Request-Method': 'DELETE'
-            },
-            body: JSON.stringify({ id: id})
-        })
+        fetch(`${accountEndpoint}/${id}`, { method: 'DELETE' })
         .then(res =>  res.text())
         .then(res => {
             if (res.includes("Deleted")) {
-                if (accounts.length === 1 && page > 0) {
-                    prevPage()
+                if (accounts.length === 1) {
+                    if (page > 0) {
+                        prevPage()
+                    } else {
+                        setAccounts([])
+                    }
                 } else {
-                    setAccounts([])
+                    load()
                 }
             }
         })
-        reset()
     }
 
-    const search = (startPage = page) => {
-        fetch(`${searchEndPoint}?startAt=${startPage * elementsPerPage}&maxResults=${elementsPerPage}`, {
+    const search = () => {
+        resetError()
+        setPage(0)
+        fetch(`${searchAccountEndpoint}?maxResults=${elementsPerPage}`, {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Access-Control-Request-Method': 'POST'
-            },
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({...account})
         })
         .then(res =>  res.json())
-        .then(data => setAccounts(data))
+        .then(data => {
+            if (!data.error) {
+               setAccounts(data)
+            }
+        })
     }
 
     const reset = () => {
         setState("Create")
-        setAccount({id: "", fullName: "", username: "", password: "", phone: "", email: "", address: ""})
+        setAccount({ id: "", fullName: "", username: "", password: "", phone: "", email: "", address: "" })
         resetError()
-        load()
     }
 
     const resetError = () => {
@@ -201,8 +196,8 @@ export default function AccountComp() {
 return (
         <div>
             <div>
-                <h1>Input Form</h1>
-                <div style={{ fontSize: 12, color: "red" }}>{actionError}</div>
+                <h1>Account Form</h1>
+                <div style={ errorLog }>{ actionError }</div>
                 <table>
                     <thead>
                         <th>ID</th>
@@ -218,75 +213,75 @@ return (
                     </thead>
                     <tbody>
                         <tr>
-                            <td> {account.id} </td>
+                            <td> { account.id } </td>
                             <td>
                                 <input
                                     type="text"
                                     value={ account.fullName }
                                     onChange={ (e) => inputAccount(
-                                        {action: "fullName", value: e.target.value})
+                                        { attribute: "fullName", value: e.target.value })
                                     }
                                 />
-                                <div style={{ fontSize: 12, color: "red" }}>{fullNameError}</div>
+                                <div style={ errorLog }>{fullNameError}</div>
                             </td>
                             <td>
                                 <input
                                     type="text"
                                     value={ account.username }
                                     onChange={ (e) => inputAccount(
-                                        {action: "username", value: e.target.value})
+                                        { attribute: "username", value: e.target.value })
                                     }
                                 />
-                                <div style={{ fontSize: 12, color: "red" }}>{usernameError}</div>
+                                <div style={ errorLog }>{usernameError }</div>
                             </td>
                             <td>
                                 <input
                                     type="text"
                                     value={ account.password }
                                     onChange={ (e) => inputAccount(
-                                        {action: "password", value: e.target.value})
+                                        { attribute: "password", value: e.target.value })
                                     }
                                 />
-                                <div style={{ fontSize: 12, color: "red" }}>{passwordError}</div>
+                                <div style={ errorLog }>{ passwordError }</div>
                             </td>
                             <td>
                                 <input
                                     type="text"
                                     value={ account.phone }
                                     onChange={ (e) => inputAccount(
-                                        { action: "phone", value: e.target.value })
+                                        { attribute: "phone", value: e.target.value })
                                     }
                                 />
-                                <div style={{ fontSize: 12, color: "red" }}>{phoneError}</div>
+                                <div style={ errorLog }>{ phoneError }</div>
                             </td>
                             <td>
                                 <input
                                     type="text"
                                     value={ account.email }
                                     onChange={ (e) => inputAccount(
-                                        {action: "email", value: e.target.value})
+                                        { attribute: "email", value: e.target.value })
                                     }
                                 />
-                                <div style={{ fontSize: 12, color: "red" }}>{emailError}</div>
+                                <div style={ errorLog }>{ emailError }</div>
                             </td>
                             <td>
                                 <input
                                     type="text"
                                     value={ account.address }
                                     onChange={ (e) => inputAccount(
-                                        {action: "address", value: e.target.value})
+                                        { attribute: "address", value: e.target.value })
                                     }
                                 />
-                                <div style={{ fontSize: 12, color: "red" }}>{addressError}</div>
+                                <div style={ errorLog }>{ addressError }</div>
                             </td>
                             <td>
                                 <button onClick={ () => save() }>{ state }</button>
                             </td>
                             <td>
-                                <button onClick={ () => reset() }>Reset</button>
+                                <button onClick={ () => search() }>Search</button>
                             </td>
                             <td>
-                                <button onClick={ () => search() }>Search</button>
+                                <button onClick={ () => reset() }>Reset</button>
                             </td>
                         </tr>
                     </tbody>
@@ -309,16 +304,15 @@ return (
                     <tbody>
                     { accounts.map(el => (
                         <tr>
-                            <td>{el.id}</td>
-                            <td>{el.fullName}</td>
-                            <td>{el.username}</td>
-                            <td>{el.password}</td>
-                            <td>{el.phone}</td>
-                            <td>{el.email}</td>
-                            <td>{el.address}</td>
+                            <td>{ el.id}</td>
+                            <td>{ el.fullName }</td>
+                            <td>{ el.username }</td>
+                            <td>{ el.password }</td>
+                            <td>{ el.phone }</td>
+                            <td>{ el.email }</td>
+                            <td>{ el.address }</td>
                             <td>
-                                <button onClick={() => prepareUpdate(el) }
-                                >Update</button>
+                                <button onClick={() => prepareUpdate(el) }>Update</button>
                             </td>
                             <td>
                                 <button onClick={() => deleteAccount(el.id) }>Delete</button>
@@ -328,13 +322,9 @@ return (
                     </tbody>
                 </table>
                 <div className="page-numbers">
-                    <span
-                        style={{  cursor: "pointer", marginRight: "10px"}}
-                        onClick={() => prevPage()}
-                    >-</span>
-                    <span>{page + 1}</span>
-                    <span style={{  cursor: "pointer", marginLeft: "10px"}}
-                          onClick={() => nextPage()}>{next}</span>
+                    <span onClick={ () => prevPage() }>-</span>
+                    <span>{ page + 1 }</span>
+                    <span onClick={ () => nextPage() }>{ next }</span>
                 </div>
             </div>
         </div>
