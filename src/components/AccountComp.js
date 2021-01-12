@@ -145,6 +145,7 @@ export default function AccountComp() {
         .then(res =>  res.json())
         .then(() => load())
     }
+    
 
     const deleteAccount = (id) => {
         fetch(`${accountEndPoint}/${id}`, {
