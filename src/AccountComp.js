@@ -1,6 +1,7 @@
 import React, {useEffect, useState} from "react";
 
 const getAllEndPoint = 'http://localhost:8083/accounts'
+const searchEndPoint = 'http://localhost:8083/accounts/attributes'
 const createEndPoint = 'http://localhost:8083/accounts'
 const updateEndPoint = 'http://localhost:8083/accounts'
 const deleteEndPoint = 'http://localhost:8083/accounts'
@@ -18,33 +19,35 @@ export default function AccountComp() {
     const [actionError, setActionError] = useState("")
     const [emailError, setEmailError] = useState("")
     const [state, setState] = useState("Create")
-    const [next, setNextPage] = useState("+")
+    const [next, setNextPage] = useState("")
     const [page, setPage] = useState(0)
-    const elementsPerPage = 1
+    const elementsPerPage = 3
 
     useEffect(() => {
        load()
     }, []);
 
-    const load = (startPage = page) =>{
-        // const startAt = page * elementsPerPage
+    const load = (startPage = page) => {
         fetch(`${getAllEndPoint}?startAt=${startPage * elementsPerPage}&maxResults=${elementsPerPage}`)
         .then(response => response.json())
         .then(data => {
             if (data.length === 0) {
+                setAccounts(accounts)
                 setPage(page)
                 setNextPage("")
             } else {
                 setAccounts(data)
+                setNextPage("+")
             }
         });
     }
 
     const prevPage = () => {
         if (page > 0) {
-            setNextPage("+")
             setPage(page - 1)
             load(page - 1)
+        } else {
+            load(page)
         }
     }
 
@@ -118,10 +121,7 @@ export default function AccountComp() {
             body: JSON.stringify(account)
         })
         .then(res => res.json())
-        .then(data => {
-            const updatedAccountsList = [...accounts, data]
-            setAccounts(updatedAccountsList)
-        })
+        .then(() => load())
         .catch(() => {setActionError("Failed to create new account")})
     }
 
@@ -151,18 +151,35 @@ export default function AccountComp() {
             body: JSON.stringify({ id: id})
         })
         .then(res =>  res.text())
-        .then(() => load())
+        .then(res => {
+            if (res.includes("Deleted")) {
+                if (accounts.length === 1 && page > 0) {
+                    prevPage()
+                } else {
+                    setAccounts([])
+                }
+            }
+        })
         reset()
     }
 
-    const search = (id) => {
-        reset()
+    const search = (startPage = page) => {
+        fetch(`${searchEndPoint}?startAt=${startPage * elementsPerPage}&maxResults=${elementsPerPage}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({...account})
+        })
+        .then(res =>  res.json())
+        .then(data => setAccounts(data))
     }
 
     const reset = () => {
         setState("Create")
         setAccount({id: "", fullName: "", username: "", password: "", phone: "", email: "", address: ""})
         resetError()
+        load()
     }
 
     const resetError = () => {
