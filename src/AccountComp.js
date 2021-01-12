@@ -6,7 +6,7 @@ const searchEndPoint = 'http://localhost:8083/accounts/attributes'
 export default function AccountComp() {
     const [account, setAccount] = useState(
         {id: "", fullName: "", username: "", password: "", phone: "", email: "", address: ""}
-        )
+    )
     const [accounts, setAccounts] = useState([])
     const [fullNameError, setFullNameError] = useState("")
     const [usernameError, setUsernameError] = useState("")
@@ -138,6 +138,7 @@ export default function AccountComp() {
         .then(res =>  res.json())
         .then(() => load())
     }
+    
 
     const deleteAccount = (id) => {
         fetch(`${accountEndPoint}/${id}`, {
