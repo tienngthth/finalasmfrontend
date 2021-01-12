@@ -1,10 +1,7 @@
 import React, {useEffect, useState} from "react";
 
-const getAllEndPoint = 'http://localhost:8083/accounts'
+const accountEndPoint = 'http://localhost:8083/accounts'
 const searchEndPoint = 'http://localhost:8083/accounts/attributes'
-const createEndPoint = 'http://localhost:8083/accounts'
-const updateEndPoint = 'http://localhost:8083/accounts'
-const deleteEndPoint = 'http://localhost:8083/accounts'
 
 export default function AccountComp() {
     const [account, setAccount] = useState(
@@ -28,7 +25,7 @@ export default function AccountComp() {
     }, []);
 
     const load = (startPage = page) => {
-        fetch(`${getAllEndPoint}?startAt=${startPage * elementsPerPage}&maxResults=${elementsPerPage}`)
+        fetch(`${accountEndPoint}?startAt=${startPage * elementsPerPage}&maxResults=${elementsPerPage}`)
         .then(response => response.json())
         .then(data => {
             if (data.length === 0) {
@@ -112,7 +109,7 @@ export default function AccountComp() {
     }
 
     const create = () => {
-        fetch(createEndPoint, {
+        fetch(accountEndPoint, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -131,7 +128,7 @@ export default function AccountComp() {
     }
 
     const update = () => {
-        fetch(updateEndPoint, {
+        fetch(accountEndPoint, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json'
@@ -143,7 +140,7 @@ export default function AccountComp() {
     }
 
     const deleteAccount = (id) => {
-        fetch(`${deleteEndPoint}/${id}`, {
+        fetch(`${accountEndPoint}/${id}`, {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json'
