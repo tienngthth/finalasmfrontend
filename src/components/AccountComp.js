@@ -1,12 +1,12 @@
 import React, {useEffect, useState} from "react";
 
-const accountEndPoint = 'http://localhost:8083/accounts'
-const searchEndPoint = 'http://localhost:8083/accounts/attributes'
+const accountEndPoint = 'http://localhost:8989/accounts'
+const searchEndPoint = 'http://localhost:8989/accounts/attributes'
 
 export default function AccountComp() {
     const [account, setAccount] = useState(
         {id: "", fullName: "", username: "", password: "", phone: "", email: "", address: ""}
-        )
+    )
     const [accounts, setAccounts] = useState([])
     const [fullNameError, setFullNameError] = useState("")
     const [usernameError, setUsernameError] = useState("")
@@ -18,14 +18,19 @@ export default function AccountComp() {
     const [state, setState] = useState("Create")
     const [next, setNextPage] = useState("")
     const [page, setPage] = useState(0)
-    const elementsPerPage = 3
+    const elementsPerPage = 1
 
     useEffect(() => {
        load()
     }, []);
 
     const load = (startPage = page) => {
-        fetch(`${accountEndPoint}?startAt=${startPage * elementsPerPage}&maxResults=${elementsPerPage}`)
+        fetch(`${accountEndPoint}?startAt=${startPage * elementsPerPage}&maxResults=${elementsPerPage}`, {
+            method: 'GET',
+            headers: {
+                'Access-Control-Request-Method': 'GET'
+            }
+        })
         .then(response => response.json())
         .then(data => {
             if (data.length === 0) {
@@ -123,6 +128,7 @@ export default function AccountComp() {
     }
 
     const prepareUpdate = (account) => {
+        account.password = ""
         setAccount(account)
         setState("Update")
     }
@@ -131,6 +137,7 @@ export default function AccountComp() {
         fetch(accountEndPoint, {
             method: 'PUT',
             headers: {
+                'Access-Control-Request-Method': 'PUT',
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({...account})
@@ -143,7 +150,7 @@ export default function AccountComp() {
         fetch(`${accountEndPoint}/${id}`, {
             method: 'DELETE',
             headers: {
-                'Content-Type': 'application/json'
+                'Access-Control-Request-Method': 'DELETE'
             },
             body: JSON.stringify({ id: id})
         })
@@ -164,7 +171,8 @@ export default function AccountComp() {
         fetch(`${searchEndPoint}?startAt=${startPage * elementsPerPage}&maxResults=${elementsPerPage}`, {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Access-Control-Request-Method': 'POST'
             },
             body: JSON.stringify({...account})
         })

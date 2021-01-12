@@ -20,36 +20,31 @@ table, td, tr, th {
 
 table {
   margin: auto;
-  width: 90%;
+  table-layout:fixed;
+  width: 95%;
+}
+
+td {
+  word-wrap:break-word;
 }
 
 input::placeholder {
   color: black;
 }
 
-.grid-container {
-  display: grid;
-  grid-template-rows: 1fr;
-  grid-template-columns: repeat(2, minmax(200px, 1fr));
-  width: 100%;
-}
-@media (max-width: 1300px){
-  .grid-container {
-    grid-template-columns: 1fr;
-    row-gap: 50px;
-  }
-}
 li {
   margin: 10px;
   user-select: none;
   cursor: pointer;
   list-style: none;
   display: inline;
-
 }
+
 .page-numbers {
   margin: 10px;
 }
+
 input, button, select {
   width: 80px;
 }
+

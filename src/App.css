@@ -36,10 +36,3 @@
     transform: rotate(360deg);
   }
 }
-table {
-  width: 95%;
-  table-layout:fixed;
-}
-td {
-  word-wrap:break-word;
-}
