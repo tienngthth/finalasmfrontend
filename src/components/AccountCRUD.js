@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { errorLog } from "../styles/styles";
+import PageFooter from "./PageFooter";
 
 const accountEndpoint = 'http://localhost:8989/accounts'
 const searchAccountEndpoint = `${accountEndpoint}/attributes`
@@ -19,7 +20,7 @@ export default function AccountCRUD() {
     const [state, setState] = useState("Create")
     const [next, setNextPage] = useState("")
     const [page, setPage] = useState(0)
-    const elementsPerPage = 15
+    const elementsPerPage = 5
 
     useEffect(() => {
        load()
@@ -28,41 +29,45 @@ export default function AccountCRUD() {
     const load = (startPage = page) => {
         fetch(`${accountEndpoint}?startAt=${startPage * elementsPerPage}&maxResults=${elementsPerPage}`)
         .then(response => response.json())
-        .then(data => {
-            if (!data.error) {
-                if (data.length === 0) {
-                    setAccounts(accounts)
-                    setPage(page)
-                    setNextPage("")
-                } else {
-                    setAccounts(data)
-                    setNextPage("+")
-                }
-            }
-        });
+        .then(data => checkLoadedRecords(data));
     }
 
-    const prevPage = () => {
-        reset()
-        if (page > 0) {
-            setPage(page - 1)
-            load(page - 1)
-        } else {
-            load(page)
+    const checkLoadedRecords = (data) => {
+        if (!data.error) {
+            if (data.length === 0) {
+                setAccounts(accounts)
+                setPage(page)
+                setNextPage("")
+            } else {
+                setAccounts(data)
+                setNextPage("+")
+            }
         }
     }
 
-    const nextPage = () => {
-        reset()
-        setPage(page + 1)
-        load(page + 1)
+    const search = () => {
+        prepareSearch()
+        fetch(`${searchAccountEndpoint}?maxResults=${elementsPerPage}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({...account})
+        })
+            .then(res =>  res.json())
+            .then(data => checkSearchResult(data))
     }
 
-    const inputAccount = (newAccount) => {
-        setAccount({...account, [newAccount.attribute]: newAccount.value})
+    const prepareSearch = () => {
+        resetError()
+        setPage(0)
     }
 
-    const save = () => {
+    const checkSearchResult = (data) => {
+        if (!data.error) {
+            setAccounts(data)
+        }
+    }
+
+    const submit = () => {
         if (validate()) {
             switch (state) {
                 case "Update":
@@ -82,7 +87,7 @@ export default function AccountCRUD() {
         const phoneNoRegex = /^\d{10,20}$/
         const addressRegex = /.{10,20}/
         const credential = /.{5,}/
-        const nameRegex = /[A-Za-z]+\s[A-Za-z]+/
+        const nameRegex = /[A-Za-z]+/
         const emailRegex = /.*[@].*/
         let valid = 1
         if (!account.phone.match(phoneNoRegex)){
@@ -90,15 +95,15 @@ export default function AccountCRUD() {
             valid = 0
         }
         if (!account.fullName.match(nameRegex)){
-            setFullNameError("Full Name must have at least 2 words separated by a space.")
+            setFullNameError("Full Name must not be empty.")
             valid = 0
         }
         if (!account.username.match(credential)){
-            setUsernameError("Username must have more 5 characters and be unique.")
+            setUsernameError("Username must have more than 5 characters and be unique.")
             valid = 0
         }
         if (state === "Create" && !account.password.match(credential)){
-            setPasswordError("Password must have more 5 characters and be unique.")
+            setPasswordError("Password must have more than 5 characters.")
             valid = 0
         }
         if (!account.email.match(emailRegex)){
@@ -115,10 +120,7 @@ export default function AccountCRUD() {
     const create = () => {
         fetch(accountEndpoint, {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json'
-            },
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(account)
         })
         .then(res => res.json())
@@ -128,7 +130,7 @@ export default function AccountCRUD() {
 
     const prepareUpdate = (account) => {
         reset()
-        setAccount({...account, ["password"]: ""})
+        setAccount({ ...account, ["password"]: "" })
         setState("Update")
     }
 
@@ -136,7 +138,7 @@ export default function AccountCRUD() {
         fetch(accountEndpoint, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({...account})
+            body: JSON.stringify({ ...account })
         })
         .then(res =>  res.json())
         .then(() => load())
@@ -146,35 +148,26 @@ export default function AccountCRUD() {
     const deleteAccount = (id) => {
         fetch(`${accountEndpoint}/${id}`, { method: 'DELETE' })
         .then(res =>  res.text())
-        .then(res => {
-            if (res.includes("Deleted")) {
-                if (accounts.length === 1) {
-                    if (page > 0) {
-                        prevPage()
-                    } else {
-                        setAccounts([])
-                    }
-                } else {
-                    load()
-                }
-            }
-        })
+        .then(res => checkDelete(res))
     }
 
-    const search = () => {
-        resetError()
-        setPage(0)
-        fetch(`${searchAccountEndpoint}?maxResults=${elementsPerPage}`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({...account})
-        })
-        .then(res =>  res.json())
-        .then(data => {
-            if (!data.error) {
-               setAccounts(data)
+    const checkDelete = (res) => {
+        if (res.includes("Deleted")) {
+            if (accounts.length === 1) {
+                if (page > 0) {
+                    setPage(page - 1)
+                    load(page - 1)
+                } else {
+                    setAccounts([])
+                }
+            } else {
+                load()
             }
-        })
+        }
+    }
+
+    const inputAccount = (newAccount) => {
+        setAccount({...account, [newAccount.attribute]: newAccount.value})
     }
 
     const reset = () => {
@@ -275,7 +268,7 @@ return (
                                 <div style={ errorLog }>{ addressError }</div>
                             </td>
                             <td>
-                                <button onClick={ () => save() }>{ state }</button>
+                                <button onClick={ () => submit() }>{ state }</button>
                             </td>
                             <td>
                                 <button onClick={ () => search() }>Search</button>
@@ -321,11 +314,13 @@ return (
                     )) }
                     </tbody>
                 </table>
-                <div className="page-numbers">
-                    <span onClick={ () => prevPage() }>-</span>
-                    <span>{ page + 1 }</span>
-                    <span onClick={ () => nextPage() }>{ next }</span>
-                </div>
+                <PageFooter
+                    reset={ reset }
+                    load={ load }
+                    setPage={ setPage }
+                    page={ page }
+                    next={ next }
+                />
             </div>
         </div>
     );

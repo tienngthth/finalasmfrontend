@@ -13,7 +13,6 @@
   color: white;
 }
 
-
 table, td, tr, th {
   border: 1px solid white;
   border-collapse: collapse;
@@ -27,30 +26,38 @@ table {
 }
 
 td {
-  word-wrap:break-word;
+  word-wrap: break-word;
 }
 
 input::placeholder {
   color: black;
 }
 
-li {
-  margin: 10px;
-  user-select: none;
-  cursor: pointer;
-  list-style: none;
-  display: inline;
-}
-
 .page-numbers {
   margin: 10px;
 }
 
-input, button, select {
-  width: 80px;
+input, button, select, textarea  {
+  width: 90%;
+}
+
+textarea {
+  resize: vertical;
+}
+
+.react-datepicker-wrapper {
+  width: 100%
 }
 
 span {
   cursor: pointer;
   margin-right: 10px;
+}
+
+td {
+  font-size: 17px;
+}
+
+th {
+  font-size: 20px;
 }

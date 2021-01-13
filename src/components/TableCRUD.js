@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { errorLog } from "../styles/styles"
+import PageFooter from "./PageFooter";
 
 const tableEndpoint = 'http://localhost:8989/tables'
 const searchTableEndpoint = `${tableEndpoint}/attributes`
@@ -11,7 +12,7 @@ export default function TableCRUD() {
     const [state, setState] = useState("Search")
     const [seatsError, setSeatsError] = useState("")
     const [page, setPage] = useState(0)
-    const elementsPerPage = 15
+    const elementsPerPage = 5
 
     useEffect(() => {
         load()
@@ -22,34 +23,20 @@ export default function TableCRUD() {
             method: 'GET'
         })
          .then(response => response.json())
-         .then(data => {
-             if (!data.error) {
-                 if (data.length === 0) {
-                     setTables(tables)
-                     setPage(page)
-                     setNextPage("")
-                 } else {
-                     setTables(data)
-                     setNextPage("+")
-                 }
-             }
-         });
+         .then(data => checkLoadedRecords(data));
     }
 
-    const prevPage = () => {
-        reset()
-        if (page > 0) {
-            setPage(page - 1)
-            load(page - 1)
-        } else {
-            load(page)
+    const checkLoadedRecords = (data) => {
+        if (!data.error) {
+            if (data.length === 0) {
+                setTables(tables)
+                setPage(page)
+                setNextPage("")
+            } else {
+                setTables(data)
+                setNextPage("+")
+            }
         }
-    }
-
-    const nextPage = () => {
-        reset()
-        setPage(page + 1)
-        load(page + 1)
     }
 
     const submit = () => {
@@ -66,21 +53,25 @@ export default function TableCRUD() {
     }
 
     const search = () => {
-        setSeatsError("")
-        setPage(0)
+        prepareSearch()
         fetch(`${searchTableEndpoint}?maxResults=${elementsPerPage}`, {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({...table})
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ ...table })
         })
-        .then(res =>  res.json())
-        .then(data => {
-            if (!data.error) {
-                setTables(data)
-            }
-        })
+        .then(res => res.json())
+        .then(data => checkSearchedResult(data))
+    }
+
+    const prepareSearch = () => {
+        setSeatsError("")
+        setPage(0)
+    }
+
+    const checkSearchedResult = (data) => {
+        if (!data.error) {
+            setTables(data)
+        }
     }
 
     const prepareUpdate = (currentTable) => {
@@ -95,7 +86,7 @@ export default function TableCRUD() {
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({...table})
+            body: JSON.stringify({ ...table })
         })
         .then(res =>  res.json())
         .then(() => load())
@@ -105,7 +96,7 @@ export default function TableCRUD() {
         if (state === "Update" && newTable.attribute === "seats") {
             setSeatsError("Can not update seats")
         } else {
-            setTable({...table, [newTable.attribute]: newTable.value})
+            setTable({ ...table, [newTable.attribute]: newTable.value })
         }
     }
 
@@ -119,7 +110,6 @@ export default function TableCRUD() {
         <div>
             <div>
                 <h1>Table Form</h1>
-                <div style={ errorLog }>{}</div>
                 <table>
                     <thead>
                         <th>ID</th>
@@ -130,7 +120,7 @@ export default function TableCRUD() {
                     </thead>
                     <tbody>
                         <tr>
-                            <td> {table.id} </td>
+                            <td> { table.id } </td>
                             <td>
                                 <input
                                     type="number"
@@ -162,7 +152,6 @@ export default function TableCRUD() {
                     </tbody>
                 </table>
             </div>
-
             <div>
                 <h1>Table List</h1>
                 <table>
@@ -185,11 +174,13 @@ export default function TableCRUD() {
                     )) }
                     </tbody>
                 </table>
-                <div className="page-numbers">
-                    <span onClick={ () => prevPage() }>-</span>
-                    <span>{ page + 1 }</span>
-                    <span onClick={ () => nextPage() }>{ next }</span>
-                </div>
+                <PageFooter
+                    reset={ reset }
+                    load={ load }
+                    setPage={ setPage }
+                    page={ page }
+                    next={ next }
+                />
             </div>
         </div>
     );
