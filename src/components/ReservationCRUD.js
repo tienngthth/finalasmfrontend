@@ -66,11 +66,16 @@ export default function ReservationCRUD() {
 
     const convertTimeField = () => {
         let newReservation = { ...reservation }
-        const startTime = new Date(newReservation.startTime).getTime()
-        if (startTime) {
+        const { startTime } = newReservation
+        if (startTime ) {
+            const convertedTime = new Date(newReservation.startTime)
+            convertedTime.setSeconds(0)
+            convertedTime.setMilliseconds(0)
+            convertedTime.setHours(convertedTime.getHours() +7)
             newReservation = {
                 ...newReservation,
-                "startTime": new Date(startTime + 1000 * 60 * 60 * 7).toJSON()}
+                "startTime": new Date(convertedTime).toJSON()
+            }
         }
         return newReservation
     }
@@ -131,6 +136,7 @@ export default function ReservationCRUD() {
             setSeatsError("Can not specify seats for table")
         } else {
             const newReservation = convertTimeField()
+            console.log(newReservation.startTime)
             fetch(adminEndpoint, {
                 method: 'POST',
                 headers: {  'Content-Type': 'application/json' },
