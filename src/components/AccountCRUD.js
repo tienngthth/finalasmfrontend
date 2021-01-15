@@ -15,7 +15,7 @@ export default function AccountCRUD() {
     const [passwordError, setPasswordError] = useState("")
     const [addressError, setAddressError] = useState("")
     const [phoneError, setPhoneError] = useState("")
-    const [actionError, setActionError] = useState("")
+    const [actionResult, setActionResult] = useState("")
     const [emailError, setEmailError] = useState("")
     const [state, setState] = useState("Create")
     const [next, setNextPage] = useState("")
@@ -67,18 +67,26 @@ export default function AccountCRUD() {
         }
     }
 
-    const submit = () => {
+    const prepareUpdate = (account) => {
+        reset()
+        setAccount({ ...account, ["password"]: "" })
+        setState("Update")
+    }
+
+    const submitAccount = () => {
         if (validate()) {
-            switch (state) {
-                case "Update":
-                    update()
-                    break
-                case "Create":
-                    create()
-                    break
-                default:
-                    break
-            }
+            const method = (state === "Update") ? "PUT" : "POST"
+            fetch(accountEndpoint, {
+                method: method,
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ ...account })
+            })
+                .then(res =>  res.json())
+                .then(() => {
+                    setActionResult("Action Completed")
+                    load()
+                })
+                .catch(() => { setActionResult("Action Failed") })
         }
     }
 
@@ -117,35 +125,8 @@ export default function AccountCRUD() {
         return valid
     }
 
-    const create = () => {
-        fetch(accountEndpoint, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(account)
-        })
-        .then(res => res.json())
-        .then(() => load())
-        .catch(() => { setActionError("Failed to create new account") })
-    }
-
-    const prepareUpdate = (account) => {
-        reset()
-        setAccount({ ...account, ["password"]: "" })
-        setState("Update")
-    }
-
-    const update = () => {
-        fetch(accountEndpoint, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ ...account })
-        })
-        .then(res =>  res.json())
-        .then(() => load())
-        .catch(() => { setActionError("Failed to update account") })
-    }
-
     const deleteAccount = (id) => {
+        resetError()
         fetch(`${accountEndpoint}/${id}`, { method: 'DELETE' })
         .then(res =>  res.text())
         .then(res => checkDelete(res))
@@ -183,145 +164,143 @@ export default function AccountCRUD() {
         setAddressError("")
         setEmailError("")
         setPasswordError("")
-        setActionError("")
+        setActionResult("")
     }
 
 return (
         <div>
-            <div>
-                <h1>Account Form</h1>
-                <div style={ errorLog }>{ actionError }</div>
-                <table>
-                    <thead>
-                        <th>ID</th>
-                        <th>Full Name</th>
-                        <th>Username</th>
-                        <th>Password</th>
-                        <th>Phone</th>
-                        <th>Email</th>
-                        <th>Address</th>
-                        <th>Action 1</th>
-                        <th>Action 2</th>
-                        <th>Action 3</th>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td> { account.id } </td>
-                            <td>
-                                <input
-                                    type="text"
-                                    value={ account.fullName }
-                                    onChange={ (e) => inputAccount(
-                                        { attribute: "fullName", value: e.target.value })
-                                    }
-                                />
-                                <div style={ errorLog }>{fullNameError}</div>
-                            </td>
-                            <td>
-                                <input
-                                    type="text"
-                                    value={ account.username }
-                                    onChange={ (e) => inputAccount(
-                                        { attribute: "username", value: e.target.value })
-                                    }
-                                />
-                                <div style={ errorLog }>{usernameError }</div>
-                            </td>
-                            <td>
-                                <input
-                                    type="text"
-                                    value={ account.password }
-                                    onChange={ (e) => inputAccount(
-                                        { attribute: "password", value: e.target.value })
-                                    }
-                                />
-                                <div style={ errorLog }>{ passwordError }</div>
-                            </td>
-                            <td>
-                                <input
-                                    type="text"
-                                    value={ account.phone }
-                                    onChange={ (e) => inputAccount(
-                                        { attribute: "phone", value: e.target.value })
-                                    }
-                                />
-                                <div style={ errorLog }>{ phoneError }</div>
-                            </td>
-                            <td>
-                                <input
-                                    type="text"
-                                    value={ account.email }
-                                    onChange={ (e) => inputAccount(
-                                        { attribute: "email", value: e.target.value })
-                                    }
-                                />
-                                <div style={ errorLog }>{ emailError }</div>
-                            </td>
-                            <td>
-                                <input
-                                    type="text"
-                                    value={ account.address }
-                                    onChange={ (e) => inputAccount(
-                                        { attribute: "address", value: e.target.value })
-                                    }
-                                />
-                                <div style={ errorLog }>{ addressError }</div>
-                            </td>
-                            <td>
-                                <button onClick={ () => submit() }>{ state }</button>
-                            </td>
-                            <td>
-                                <button onClick={ () => search() }>Search</button>
-                            </td>
-                            <td>
-                                <button onClick={ () => reset() }>Reset</button>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-            <div>
-                <h1>Account List</h1>
-                <table>
-                    <thead>
-                        <th>ID</th>
-                        <th>Full Name</th>
-                        <th>Username</th>
-                        <th>Password</th>
-                        <th>Phone</th>
-                        <th>Email</th>
-                        <th>Address</th>
-                        <th>Action 1</th>
-                        <th>Action 2</th>
-                    </thead>
-                    <tbody>
-                    { accounts.map(el => (
-                        <tr>
-                            <td>{ el.id}</td>
-                            <td>{ el.fullName }</td>
-                            <td>{ el.username }</td>
-                            <td>{ el.password }</td>
-                            <td>{ el.phone }</td>
-                            <td>{ el.email }</td>
-                            <td>{ el.address }</td>
-                            <td>
-                                <button onClick={() => prepareUpdate(el) }>Update</button>
-                            </td>
-                            <td>
-                                <button onClick={() => deleteAccount(el.id) }>Delete</button>
-                            </td>
-                        </tr>
-                    )) }
-                    </tbody>
-                </table>
-                <PageFooter
-                    reset={ reset }
-                    load={ load }
-                    setPage={ setPage }
-                    page={ page }
-                    next={ next }
-                />
-            </div>
+            <h1>Account Form</h1>
+            <div style={ errorLog }>{ actionResult }</div>
+            <table>
+                <thead>
+                    <th>ID</th>
+                    <th>Full Name</th>
+                    <th>Username</th>
+                    <th>Password</th>
+                    <th>Phone</th>
+                    <th>Email</th>
+                    <th>Address</th>
+                    <th>Action 1</th>
+                    <th>Action 2</th>
+                    <th>Action 3</th>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td> { account.id } </td>
+                        <td>
+                            <input
+                                type="text"
+                                value={ account.fullName }
+                                onChange={ (e) => inputAccount(
+                                    { attribute: "fullName", value: e.target.value })
+                                }
+                            />
+                            <div style={ errorLog }>{fullNameError}</div>
+                        </td>
+                        <td>
+                            <input
+                                type="text"
+                                value={ account.username }
+                                onChange={ (e) => inputAccount(
+                                    { attribute: "username", value: e.target.value })
+                                }
+                            />
+                            <div style={ errorLog }>{usernameError }</div>
+                        </td>
+                        <td>
+                            <input
+                                type="text"
+                                value={ account.password }
+                                onChange={ (e) => inputAccount(
+                                    { attribute: "password", value: e.target.value })
+                                }
+                            />
+                            <div style={ errorLog }>{ passwordError }</div>
+                        </td>
+                        <td>
+                            <input
+                                type="text"
+                                value={ account.phone }
+                                onChange={ (e) => inputAccount(
+                                    { attribute: "phone", value: e.target.value })
+                                }
+                            />
+                            <div style={ errorLog }>{ phoneError }</div>
+                        </td>
+                        <td>
+                            <input
+                                type="text"
+                                value={ account.email }
+                                onChange={ (e) => inputAccount(
+                                    { attribute: "email", value: e.target.value })
+                                }
+                            />
+                            <div style={ errorLog }>{ emailError }</div>
+                        </td>
+                        <td>
+                            <input
+                                type="text"
+                                value={ account.address }
+                                onChange={ (e) => inputAccount(
+                                    { attribute: "address", value: e.target.value })
+                                }
+                            />
+                            <div style={ errorLog }>{ addressError }</div>
+                        </td>
+                        <td>
+                            <button onClick={ () => submitAccount() }>{ state }</button>
+                        </td>
+                        <td>
+                            <button onClick={ () => search() }>Search</button>
+                        </td>
+                        <td>
+                            <button onClick={ () => reset() }>Reset</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h1>Account List</h1>
+            <table>
+                <thead>
+                    <th>ID</th>
+                    <th>Full Name</th>
+                    <th>Username</th>
+                    <th>Password</th>
+                    <th>Phone</th>
+                    <th>Email</th>
+                    <th>Address</th>
+                    <th>Action 1</th>
+                    <th>Action 2</th>
+                </thead>
+                <tbody>
+                { accounts.map(el => (
+                    <tr>
+                        <td>{ el.id}</td>
+                        <td>{ el.fullName }</td>
+                        <td>{ el.username }</td>
+                        <td>{ el.password }</td>
+                        <td>{ el.phone }</td>
+                        <td>{ el.email }</td>
+                        <td>{ el.address }</td>
+                        <td>
+                            <button onClick={() => prepareUpdate(el) }>Update</button>
+                        </td>
+                        <td>
+                            <button onClick={() => deleteAccount(el.id) }>Delete</button>
+                        </td>
+                    </tr>
+                )) }
+                </tbody>
+            </table>
+
+            <PageFooter
+                reset={ reset }
+                load={ load }
+                setPage={ setPage }
+                page={ page }
+                next={ next }
+            />
         </div>
     );
 }

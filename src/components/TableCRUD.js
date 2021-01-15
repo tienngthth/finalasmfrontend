@@ -83,9 +83,7 @@ export default function TableCRUD() {
     const update = () => {
         fetch(tableEndpoint,  {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
+            headers: { 'Content-Type': 'application/json'},
             body: JSON.stringify({ ...table })
         })
         .then(res =>  res.json())
@@ -108,80 +106,78 @@ export default function TableCRUD() {
  
     return (
         <div>
-            <div>
-                <h1>Table Form</h1>
-                <table>
-                    <thead>
-                        <th>ID</th>
-                        <th>Seat</th>
-                        <th>Status</th>
-                        <th>Action 1</th>
-                        <th>Action 2</th>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td> { table.id } </td>
-                            <td>
-                                <input
-                                    type="number"
-                                    min="1"
-                                    value={ table.seats }
-                                    onChange={ (e) => inputTable (
-                                         { attribute: "seats", value: e.target.value })
-                                    }
-                                />
-                                <div style={ errorLog }>{ seatsError }</div>
-                            </td>
-                            <td>
-                                <select value={ table.status }
-                                        onChange={ (e) =>
-                                        inputTable({ attribute: "status", value: e.target.value })}
-                                >
-                                    <option value=""/>
-                                    <option value="available">available</option>
-                                    <option value="unavailable">unavailable</option>
-                                </select>
-                            </td>
-                            <td>
-                                <button onClick={ () => submit() }>{ state }</button>
-                            </td>
-                            <td>
-                                <button onClick={ () => reset() }>Reset</button>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-            <div>
-                <h1>Table List</h1>
-                <table>
-                    <thead>
-                        <th>ID</th>
-                        <th>Seats</th>
-                        <th>Status</th>
-                        <th>Action 1</th>
-                    </thead>
-                    <tbody>
-                    { tables.map(el => (
-                        <tr>
-                            <td>{ el.id }</td>
-                            <td>{ el.seats }</td>
-                            <td>{ el.status }</td>
-                            <td>
-                                <button onClick={ () => prepareUpdate(el) }>Update</button>
-                            </td>
-                        </tr>
-                    )) }
-                    </tbody>
-                </table>
-                <PageFooter
-                    reset={ reset }
-                    load={ load }
-                    setPage={ setPage }
-                    page={ page }
-                    next={ next }
-                />
-            </div>
+            <h1>Table Form</h1>
+            <table>
+                <thead>
+                    <th>ID</th>
+                    <th>Seat</th>
+                    <th>Status</th>
+                    <th>Action 1</th>
+                    <th>Action 2</th>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td> { table.id } </td>
+                        <td>
+                            <input
+                                type="number"
+                                min="1"
+                                value={ table.seats }
+                                onChange={ (e) => inputTable (
+                                     { attribute: "seats", value: e.target.value })
+                                }
+                            />
+                            <div style={ errorLog }>{ seatsError }</div>
+                        </td>
+                        <td>
+                            <select value={ table.status }
+                                    onChange={ (e) =>
+                                    inputTable({ attribute: "status", value: e.target.value })}
+                            >
+                                <option value=""/>
+                                <option value="available">available</option>
+                                <option value="unavailable">unavailable</option>
+                            </select>
+                        </td>
+                        <td>
+                            <button onClick={ () => submit() }>{ state }</button>
+                        </td>
+                        <td>
+                            <button onClick={ () => reset() }>Reset</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h1>Table List</h1>
+            <table>
+                <thead>
+                    <th>ID</th>
+                    <th>Seats</th>
+                    <th>Status</th>
+                    <th>Action 1</th>
+                </thead>
+                <tbody>
+                { tables.map(el => (
+                    <tr>
+                        <td>{ el.id }</td>
+                        <td>{ el.seats }</td>
+                        <td>{ el.status }</td>
+                        <td>
+                            <button onClick={ () => prepareUpdate(el) }>Update</button>
+                        </td>
+                    </tr>
+                )) }
+                </tbody>
+            </table>
+
+            <PageFooter
+                reset={ reset }
+                load={ load }
+                setPage={ setPage }
+                page={ page }
+                next={ next }
+            />
         </div>
     );
 }
