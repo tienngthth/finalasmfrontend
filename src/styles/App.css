@@ -1,22 +1,37 @@
 .App {
-  text-align: center;
+  text-align: left;
 }
 
 .App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+  background-color: #eaeaea;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   font-size: calc(10px + 2vmin);
-  color: white;
+  color: black;
+  min-height: 100vh;
 }
 
-table, td, tr, th {
-  border: 1px solid white;
-  border-collapse: collapse;
-  padding: 10px;
+.mainPage {
+  padding: 0;
+  margin: 60px 80px 60px 80px;
+}
+
+.pageSection {
+  background-color: white;
+  margin-bottom: 40px;
+}
+
+h1 {
+  margin: 0;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  padding-left: 50px;
+  background-color: #0a4573;
+  color: white;
+  text-align: left;
+  font-size: 35px;
 }
 
 table {
@@ -25,8 +40,36 @@ table {
   width: 95%;
 }
 
+table, td, tr, th {
+  color: #0a4573;
+  border-collapse: collapse;
+  padding: 10px;
+}
+
+th {
+  border-bottom: 2px solid rgba(190, 190, 190, 0.8);
+  font-size: 20px;
+}
+
+th, td {
+  padding-top: 20px;
+  padding-bottom: 20px;
+}
+
 td {
+  border-top: 1px solid rgb(231, 231, 231);
   word-wrap: break-word;
+  font-size: 17px;
+}
+
+input, select, textarea {
+  border: none;
+  border-bottom: 1px solid rgb(231, 231, 231);
+}
+
+input:focus, select:focus, textarea:focus {
+  outline: none;
+  border-bottom: 2px solid rgb(190, 190, 190);
 }
 
 input::placeholder {
@@ -41,6 +84,37 @@ input, button, select, textarea  {
   width: 90%;
 }
 
+button {
+  color: white;
+  padding: 10px;
+  width: 80px;
+  border-radius: 4px;
+  cursor: pointer;
+  border: none;
+  outline: none;
+  background-color: rgb(75, 162, 13);
+}
+
+button:hover {
+  background-color: rgb(37, 81, 6);
+}
+
+.updateButton {
+  background-color: rgb(18, 100, 183);
+}
+
+.updateButton:hover {
+  background-color: rgb(17, 56, 96);
+}
+
+.deleteButton{
+  background-color: rgb(181, 21, 21);
+}
+
+.deleteButton:hover {
+  background-color: rgb(105, 11, 11);
+}
+
 textarea {
   resize: vertical;
 }
@@ -49,15 +123,17 @@ textarea {
   width: 100%
 }
 
-span {
+.pageNumbers{
+  text-align: right;
+}
+
+.pageSelect {
   cursor: pointer;
   margin-right: 10px;
-}
-
-td {
-  font-size: 17px;
-}
-
-th {
   font-size: 20px;
+}
+
+.actionResult, .errorLog {
+  font-size: 12px;
+  color: red;
 }

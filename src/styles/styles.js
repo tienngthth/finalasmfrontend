@@ -1,1 +1,0 @@
-export const errorLog = { fontSize: 12, color: "red" }

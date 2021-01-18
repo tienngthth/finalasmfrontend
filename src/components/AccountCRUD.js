@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { errorLog } from "../styles/styles";
 import PageFooter from "./PageFooter";
 
 const accountEndpoint = 'http://localhost:8989/accounts'
@@ -168,11 +167,13 @@ export default function AccountCRUD() {
     }
 
 return (
-        <div>
-            <h1>Account Form</h1>
-            <div style={ errorLog }>{ actionResult }</div>
-            <table>
-                <thead>
+        <div className={"mainPage"}>
+            <div className={"pageSection"}>
+                <h1>Account Form
+                    <div className={"actionResult"}>{ actionResult }</div>
+                </h1>
+                <table>
+                    <thead>
                     <th>ID</th>
                     <th>Full Name</th>
                     <th>Username</th>
@@ -183,8 +184,8 @@ return (
                     <th>Action 1</th>
                     <th>Action 2</th>
                     <th>Action 3</th>
-                </thead>
-                <tbody>
+                    </thead>
+                    <tbody>
                     <tr>
                         <td> { account.id } </td>
                         <td>
@@ -195,7 +196,7 @@ return (
                                     { attribute: "fullName", value: e.target.value })
                                 }
                             />
-                            <div style={ errorLog }>{fullNameError}</div>
+                            <div className = { "errorLog" }>{fullNameError}</div>
                         </td>
                         <td>
                             <input
@@ -205,7 +206,7 @@ return (
                                     { attribute: "username", value: e.target.value })
                                 }
                             />
-                            <div style={ errorLog }>{usernameError }</div>
+                            <div className = { "errorLog" }>{usernameError }</div>
                         </td>
                         <td>
                             <input
@@ -215,7 +216,7 @@ return (
                                     { attribute: "password", value: e.target.value })
                                 }
                             />
-                            <div style={ errorLog }>{ passwordError }</div>
+                            <div className = { "errorLog" }>{ passwordError }</div>
                         </td>
                         <td>
                             <input
@@ -225,7 +226,7 @@ return (
                                     { attribute: "phone", value: e.target.value })
                                 }
                             />
-                            <div style={ errorLog }>{ phoneError }</div>
+                            <div className = { "errorLog" }>{ phoneError }</div>
                         </td>
                         <td>
                             <input
@@ -235,7 +236,7 @@ return (
                                     { attribute: "email", value: e.target.value })
                                 }
                             />
-                            <div style={ errorLog }>{ emailError }</div>
+                            <div className = { "errorLog" }>{ emailError }</div>
                         </td>
                         <td>
                             <input
@@ -245,7 +246,7 @@ return (
                                     { attribute: "address", value: e.target.value })
                                 }
                             />
-                            <div style={ errorLog }>{ addressError }</div>
+                            <div className = { "errorLog" }>{ addressError }</div>
                         </td>
                         <td>
                             <button onClick={ () => submitAccount() }>{ state }</button>
@@ -257,12 +258,13 @@ return (
                             <button onClick={ () => reset() }>Reset</button>
                         </td>
                     </tr>
-                </tbody>
-            </table>
-
-            <h1>Account List</h1>
-            <table>
-                <thead>
+                    </tbody>
+                </table>
+            </div>
+            <div className={"pageSection"}>
+                <h1>Account List</h1>
+                <table>
+                    <thead>
                     <th>ID</th>
                     <th>Full Name</th>
                     <th>Username</th>
@@ -272,35 +274,36 @@ return (
                     <th>Address</th>
                     <th>Action 1</th>
                     <th>Action 2</th>
-                </thead>
-                <tbody>
-                { accounts.map(el => (
-                    <tr>
-                        <td>{ el.id}</td>
-                        <td>{ el.fullName }</td>
-                        <td>{ el.username }</td>
-                        <td>{ el.password }</td>
-                        <td>{ el.phone }</td>
-                        <td>{ el.email }</td>
-                        <td>{ el.address }</td>
-                        <td>
-                            <button onClick={() => prepareUpdate(el) }>Update</button>
-                        </td>
-                        <td>
-                            <button onClick={() => deleteAccount(el.id) }>Delete</button>
-                        </td>
-                    </tr>
-                )) }
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                    {accounts.map(el => (
+                        <tr>
+                            <td>{el.id}</td>
+                            <td>{el.fullName}</td>
+                            <td>{el.username}</td>
+                            <td>{el.password}</td>
+                            <td>{el.phone}</td>
+                            <td>{el.email}</td>
+                            <td>{el.address}</td>
+                            <td>
+                                <button className={"updateButton"} onClick={() => prepareUpdate(el)}>Update</button>
+                            </td>
+                            <td>
+                                <button className={"deleteButton"} onClick={() => deleteAccount(el.id)}>Delete</button>
+                            </td>
+                        </tr>
+                    ))}
+                    </tbody>
+                </table>
 
-            <PageFooter
-                reset={ reset }
-                load={ load }
-                setPage={ setPage }
-                page={ page }
-                next={ next }
-            />
+                <PageFooter
+                    reset={reset}
+                    load={load}
+                    setPage={setPage}
+                    page={page}
+                    next={next}
+                />
+            </div>
         </div>
     );
 }

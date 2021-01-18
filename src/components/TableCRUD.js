@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { errorLog } from "../styles/styles"
 import PageFooter from "./PageFooter";
 
 const tableEndpoint = 'http://localhost:8989/tables'
@@ -105,9 +104,10 @@ export default function TableCRUD() {
     }
  
     return (
-        <div>
-            <h1>Table Form</h1>
-            <table>
+        <div className={"mainPage"}>
+            <div className={"pageSection"}>
+                <h1>Table Form</h1>
+                <table>
                 <thead>
                     <th>ID</th>
                     <th>Seat</th>
@@ -127,7 +127,7 @@ export default function TableCRUD() {
                                      { attribute: "seats", value: e.target.value })
                                 }
                             />
-                            <div style={ errorLog }>{ seatsError }</div>
+                            <div className = { "errorLog" }>{ seatsError }</div>
                         </td>
                         <td>
                             <select value={ table.status }
@@ -148,36 +148,38 @@ export default function TableCRUD() {
                     </tr>
                 </tbody>
             </table>
+            </div>
+            <div className={"pageSection"}>
+                <h1>Table List</h1>
+                <table>
+                    <thead>
+                        <th>ID</th>
+                        <th>Seats</th>
+                        <th>Status</th>
+                        <th>Action 1</th>
+                    </thead>
+                    <tbody>
+                    { tables.map(el => (
+                        <tr>
+                            <td>{ el.id }</td>
+                            <td>{ el.seats }</td>
+                            <td>{ el.status }</td>
+                            <td>
+                                <button className={"updateButton"} onClick={ () => prepareUpdate(el) }>Update</button>
+                            </td>
+                        </tr>
+                    )) }
+                    </tbody>
+                </table>
 
-            <h1>Table List</h1>
-            <table>
-                <thead>
-                    <th>ID</th>
-                    <th>Seats</th>
-                    <th>Status</th>
-                    <th>Action 1</th>
-                </thead>
-                <tbody>
-                { tables.map(el => (
-                    <tr>
-                        <td>{ el.id }</td>
-                        <td>{ el.seats }</td>
-                        <td>{ el.status }</td>
-                        <td>
-                            <button onClick={ () => prepareUpdate(el) }>Update</button>
-                        </td>
-                    </tr>
-                )) }
-                </tbody>
-            </table>
-
-            <PageFooter
-                reset={ reset }
-                load={ load }
-                setPage={ setPage }
-                page={ page }
-                next={ next }
-            />
+                <PageFooter
+                    reset={ reset }
+                    load={ load }
+                    setPage={ setPage }
+                    page={ page }
+                    next={ next }
+                />
+            </div>
         </div>
     );
 }

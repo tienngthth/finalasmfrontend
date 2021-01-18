@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { errorLog } from "../styles/styles";
 import DateTimePicker from "./DateTime"
 import PageFooter from "./PageFooter"
 
@@ -201,165 +200,169 @@ export default function ReservationCRUD() {
     }
 
 return (
-        <div>
-            <h1>Reservation Form</h1>
-            <div style={ errorLog }>{ actionResult }</div>
-            <table>
-                <thead>
-                    <th>ID</th>
-                    <th>Name</th>
-                    <th>Email</th>
-                    <th>Phone</th>
-                    <th>Table Id</th>
-                    <th>Seats</th>
-                    <th colSpan="2">Start time</th>
-                    <th>Note</th>
-                    <th>Status</th>
-                    <th>Action 1</th>
-                    <th>Action 2</th>
-                    <th>Action 3</th>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td> { reservation.id } </td>
-                        <td>
-                            <input
-                                type="text"
-                                value={ reservation.name }
-                                onChange={ (e) => inputReservation(
-                                    { attribute: "name", value: e.target.value })
-                                }
-                            />
-                            <div style={ errorLog }>{ nameError }</div>
-                        </td>
-                        <td>
-                            <input
-                                type="text"
-                                value={ reservation.email }
-                                onChange={ (e) => inputReservation(
-                                    { attribute: "email", value: e.target.value })
-                                }
-                            />
-                            <div style={ errorLog }>{ emailError }</div>
-                        </td>
-                        <td>
-                            <input
-                                type="text"
-                                value={ reservation.phone }
-                                onChange={ (e) => inputReservation(
-                                    { attribute: "phone", value: e.target.value })
-                                }
-                            />
-                            <div style={ errorLog }>{ phoneError }</div>
-                        </td>
-                        <td>
-                            <input
-                                type="number"
-                                min="1"
-                                value={ reservation.tableId }
-                                onChange={ (e) => inputReservation(
-                                    { attribute: "tableId", value: e.target.value })
-                                }
-                            />
-                            <div style={ errorLog }>{ tableIdError }</div>
-                        </td>
-                        <td>
-                            <input
-                                type="number"
-                                min="1"
-                                value={ reservation.seats }
-                                onChange={ (e) => inputReservation(
-                                    { attribute: "seats", value: e.target.value })
-                                }
-                            />
-                            <div style={ errorLog }>{ seatsError }</div>
-                        </td>
-                        <td colSpan="2">
-                            <DateTimePicker
-                                startTime={ reservation.startTime }
-                                updateReservation={ inputReservation }
-                            />
-                            <div style={ errorLog }>{ startTimeError }</div>
-                        </td>
-                        <td>
-                            <textarea
-                                value={ reservation.note }
-                                onChange={ (e) => inputReservation(
-                                    { attribute: "note", value: e.target.value })
-                                }
-                            />
-                        </td>
-                        <td>
-                            <select value={ reservation.status }
-                                    onChange={ (e) =>
-                                        inputReservation({ attribute: "status", value: e.target.value })}
-                            >
-                                <option value=""/>
-                                <option value="booked">booked</option>
-                                <option value="cancelled">cancelled</option>
-                                <option value="done">done</option>
-                            </select>
-                        </td>
-                        <td>
-                            <button onClick={ () => submitReservation() }>{ state }</button>
-                        </td>
-                        <td>
-                            <button onClick={ () => search() }>Search</button>
-                        </td>
-                        <td>
-                            <button onClick={ () => reset() }>Reset</button>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+        <div className={"mainPage"}>
+            <div className={"pageSection"}>
+                <h1>Reservation Form
+                    <div className={"actionResult"}>{ actionResult }</div>
+                </h1>
+                <table>
+                    <thead>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Phone</th>
+                        <th>Table Id</th>
+                        <th>Seats</th>
+                        <th colSpan="2">Start time</th>
+                        <th>Note</th>
+                        <th>Status</th>
+                        <th>Action 1</th>
+                        <th>Action 2</th>
+                        <th>Action 3</th>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td> { reservation.id } </td>
+                            <td>
+                                <input
+                                    type="text"
+                                    value={ reservation.name }
+                                    onChange={ (e) => inputReservation(
+                                        { attribute: "name", value: e.target.value })
+                                    }
+                                />
+                                <div className = { "errorLog" }>{ nameError }</div>
+                            </td>
+                            <td>
+                                <input
+                                    type="text"
+                                    value={ reservation.email }
+                                    onChange={ (e) => inputReservation(
+                                        { attribute: "email", value: e.target.value })
+                                    }
+                                />
+                                <div className = { "errorLog" }>{ emailError }</div>
+                            </td>
+                            <td>
+                                <input
+                                    type="text"
+                                    value={ reservation.phone }
+                                    onChange={ (e) => inputReservation(
+                                        { attribute: "phone", value: e.target.value })
+                                    }
+                                />
+                                <div className = { "errorLog" }>{ phoneError }</div>
+                            </td>
+                            <td>
+                                <input
+                                    type="number"
+                                    min="1"
+                                    value={ reservation.tableId }
+                                    onChange={ (e) => inputReservation(
+                                        { attribute: "tableId", value: e.target.value })
+                                    }
+                                />
+                                <div className = { "errorLog" }>{ tableIdError }</div>
+                            </td>
+                            <td>
+                                <input
+                                    type="number"
+                                    min="1"
+                                    value={ reservation.seats }
+                                    onChange={ (e) => inputReservation(
+                                        { attribute: "seats", value: e.target.value })
+                                    }
+                                />
+                                <div className = { "errorLog" }>{ seatsError }</div>
+                            </td>
+                            <td colSpan="2">
+                                <DateTimePicker
+                                    startTime={ reservation.startTime }
+                                    updateReservation={ inputReservation }
+                                />
+                                <div className = { "errorLog" }>{ startTimeError }</div>
+                            </td>
+                            <td>
+                                <textarea
+                                    value={ reservation.note }
+                                    onChange={ (e) => inputReservation(
+                                        { attribute: "note", value: e.target.value })
+                                    }
+                                />
+                            </td>
+                            <td>
+                                <select value={ reservation.status }
+                                        onChange={ (e) =>
+                                            inputReservation({ attribute: "status", value: e.target.value })}
+                                >
+                                    <option value=""/>
+                                    <option value="booked">booked</option>
+                                    <option value="cancelled">cancelled</option>
+                                    <option value="done">done</option>
+                                </select>
+                            </td>
+                            <td>
+                                <button onClick={ () => submitReservation() }>{ state }</button>
+                            </td>
+                            <td>
+                                <button onClick={ () => search() }>Search</button>
+                            </td>
+                            <td>
+                                <button onClick={ () => reset() }>Reset</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div className={"pageSection"}>
+                <h1>Reservation List</h1>
+                <table>
+                    <thead>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Phone</th>
+                        <th>Table Id</th>
+                        <th>Seats</th>
+                        <th>Start time</th>
+                        <th>Note</th>
+                        <th>Status</th>
+                        <th>Action 1</th>
+                        <th>Action 2</th>
+                    </thead>
+                    <tbody>
+                    { reservations.map(el => (
+                        <tr>
+                            <td>{ el.id}</td>
+                            <td>{ el.name }</td>
+                            <td>{ el.email }</td>
+                            <td>{ el.phone }</td>
+                            <td>{ el.tableId }</td>
+                            <td>{ el.seats }</td>
+                            <td>
+                                { getIndochinaTime(el.startTime) }
+                            </td>
+                            <td>{ el.note }</td>
+                            <td>{ el.status }</td>
+                            <td>
+                                <button className={"updateButton"} onClick={() => prepareUpdate(el) }>Update</button>
+                            </td>
+                            <td>
+                                <button className={"deleteButton"} onClick={() => deleteReservation(el.id) }>Delete</button>
+                            </td>
+                        </tr>
+                    )) }
+                    </tbody>
+                </table>
 
-            <h1>Reservation List</h1>
-            <table>
-                <thead>
-                    <th>ID</th>
-                    <th>Name</th>
-                    <th>Email</th>
-                    <th>Phone</th>
-                    <th>Table Id</th>
-                    <th>Seats</th>
-                    <th>Start time</th>
-                    <th>Note</th>
-                    <th>Status</th>
-                    <th>Action 1</th>
-                    <th>Action 2</th>
-                </thead>
-                <tbody>
-                { reservations.map(el => (
-                    <tr>
-                        <td>{ el.id}</td>
-                        <td>{ el.name }</td>
-                        <td>{ el.email }</td>
-                        <td>{ el.phone }</td>
-                        <td>{ el.tableId }</td>
-                        <td>{ el.seats }</td>
-                        <td>
-                            { getIndochinaTime(el.startTime) }
-                        </td>
-                        <td>{ el.note }</td>
-                        <td>{ el.status }</td>
-                        <td>
-                            <button onClick={() => prepareUpdate(el) }>Update</button>
-                        </td>
-                        <td>
-                            <button onClick={() => deleteReservation(el.id) }>Delete</button>
-                        </td>
-                    </tr>
-                )) }
-                </tbody>
-            </table>
-
-            <PageFooter
-                reset={ reset }
-                load={ load }
-                setPage={ setPage }
-                page={ page }
-                next={ next }
-            />
+                <PageFooter
+                    reset={ reset }
+                    load={ load }
+                    setPage={ setPage }
+                    page={ page }
+                    next={ next }
+                />
+            </div>
         </div>
     );
 }

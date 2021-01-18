@@ -19,9 +19,9 @@ export default function pageFooter(props) {
         load(page + 1)
     }
 
-    return <div className="page-numbers">
-        <span onClick={ () => prevPage() }>-</span>
-        <span>{ page + 1 }</span>
-        <span onClick={ () => nextPage() }>{ next }</span>
+    return <div className="pageNumbers">
+        <span className={"pageSelect"} onClick={ () => prevPage() }>-</span>
+        <span className={"pageSelect"}>{ page + 1 }</span>
+        <span className={"pageSelect"} onClick={ () => nextPage() }>{ next }</span>
     </div>
 }
